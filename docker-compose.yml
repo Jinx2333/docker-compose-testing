@@ -1,0 +1,35 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: dbusr
+      MYSQL_PASSWORD: password123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      wordpress:
+        aliases:
+          - mysql
+
+  apache-php:
+    image: alphasolution/k8s-apache-php72:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./config:/etc/apache2/sites-available
+      - ./html:/var/www/html
+    environment:
+      RUN_AS_USER: ubuntu
+      RUN_AS_GROUP: ubuntu
+    networks:
+      wordpress:
+        aliases:
+          - apache
+
+networks:
+  wordpress:
